@@ -38,7 +38,7 @@ export const connectAccountButtonHandler = async (
         }),
         title: {
           type: "plain_text",
-          text: "Modal title",
+          text: "Configure Athena",
         },
         blocks: getConfigModalBlocks(),
         submit: {

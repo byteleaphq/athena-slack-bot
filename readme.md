@@ -1,3 +1,5 @@
 # todos
 
-add auth middleware
+- [ ] add auth middleware
+
+- [ ] make modal use brains list

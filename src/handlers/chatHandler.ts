@@ -1,4 +1,8 @@
-import { AllMiddlewareArgs, SlackEventMiddlewareArgs } from "@slack/bolt";
+import {
+  AllMiddlewareArgs,
+  KnownBlock,
+  SlackEventMiddlewareArgs,
+} from "@slack/bolt";
 import { createChat, getResponse } from "../lib/api";
 import { prisma } from "../app";
 import { StringIndexed } from "@slack/bolt/dist/types/helpers";
@@ -29,10 +33,7 @@ export const appMentionHandler = async (
 ) => {
   const { event, say, client } = payload;
 
-  const { team_id, is_admin } = await getUserTeamInfo(
-    event.user as string,
-    client
-  );
+  let is_admin: boolean = false;
 
   const threadId = event.thread_ts || event.ts;
   const isRootMessage = event.thread_ts ? false : true;
@@ -42,6 +43,53 @@ export const appMentionHandler = async (
   try {
     const { athena_brain_id, athena_api_token } =
       await validateTeamAndAthenaInfo(teamId);
+
+    const userInfo = await getUserTeamInfo(event.user as string, client);
+
+    is_admin = userInfo.is_admin;
+
+    await client.reactions.add({
+      name: "eyes",
+      channel: event.channel,
+      timestamp: event.ts,
+    });
+
+    async function sendMsgAndRemoveEmoji(response: string) {
+      const blocks: KnownBlock[] = [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: response,
+          },
+        },
+      ];
+
+      if (isRootMessage) {
+        blocks.push({
+          type: "context",
+          elements: [
+            {
+              type: "mrkdwn",
+              text: "Reply to this thread to continue the chat. :speech_balloon:",
+            },
+          ],
+        });
+      }
+
+      await say({
+        thread_ts: event.ts,
+        // text: response,
+        blocks: blocks,
+        mrkdwn: true,
+      });
+
+      await client.reactions.remove({
+        name: "eyes",
+        channel: event.channel,
+        timestamp: event.ts,
+      });
+    }
 
     if (isRootMessage) {
       const { response, chatId } = await createChat(
@@ -55,12 +103,7 @@ export const appMentionHandler = async (
         data: { chat_id: chatId, team_id: teamId, thread_id: threadId },
       });
 
-      await say({
-        thread_ts: event.ts,
-        text: response,
-        mrkdwn: true,
-        parse: "full",
-      });
+      await sendMsgAndRemoveEmoji(response);
       return;
     }
 
@@ -76,14 +119,16 @@ export const appMentionHandler = async (
       chatInfo.chat_id,
       message
     );
-    await say({
-      thread_ts: event.ts,
-      text: response,
-      mrkdwn: true,
-      parse: "full",
-    });
+
+    await sendMsgAndRemoveEmoji(response);
   } catch (error: any) {
     console.log(error);
+
+    await client.reactions.remove({
+      name: "eyes",
+      channel: event.channel,
+      timestamp: event.ts,
+    });
 
     if (error.message === "Validation failed") {
       await say({
@@ -95,7 +140,7 @@ export const appMentionHandler = async (
 
     await say({
       thread_ts: threadId,
-      text: "I'm sorry, I can't find your information. Please contact the administrator.",
+      text: "I'm sorry, I couldn't process your request. Please try again.",
     });
   }
 };

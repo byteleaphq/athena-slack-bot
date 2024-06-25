@@ -30,3 +30,12 @@ model chats {
   athena_brain_id String?  @db.Uuid
   teams           teams?   @relation(fields: [team_id], references: [team_id], onDelete: NoAction)
 }
+
+model Installation {
+  id               Int     @id @default(autoincrement())
+  installationId   String  @unique
+  installationType String
+  enterpriseId     String?
+  teamId           String?
+  installationData Json
+}

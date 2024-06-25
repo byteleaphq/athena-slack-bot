@@ -41,12 +41,12 @@ export const appMentionHandler = async (
   const message = event.text.split(" ").slice(1).join(" ");
 
   try {
-    const { athena_brain_id, athena_api_token } =
-      await validateTeamAndAthenaInfo(teamId);
-
     const userInfo = await getUserTeamInfo(event.user as string, client);
 
     is_admin = userInfo.is_admin;
+
+    const { athena_brain_id, athena_api_token } =
+      await validateTeamAndAthenaInfo(teamId);
 
     await client.reactions.add({
       name: "eyes",
@@ -124,12 +124,6 @@ export const appMentionHandler = async (
   } catch (error: any) {
     console.log(error);
 
-    await client.reactions.remove({
-      name: "eyes",
-      channel: event.channel,
-      timestamp: event.ts,
-    });
-
     if (error.message === "Validation failed") {
       await say({
         thread_ts: threadId,
@@ -137,6 +131,12 @@ export const appMentionHandler = async (
       });
       return;
     }
+
+    await client.reactions.remove({
+      name: "eyes",
+      channel: event.channel,
+      timestamp: event.ts,
+    });
 
     await say({
       thread_ts: threadId,

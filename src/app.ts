@@ -10,8 +10,10 @@ import { configModalFormHandler } from "./handlers/configModalFormHandler";
 export const prisma = new PrismaClient();
 
 const app = new App({
-  token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
+  clientId: process.env.SLACK_CLIENT_ID,
+  clientSecret: process.env.SLACK_CLIENT_SECRET,
+  stateSecret: process.env.SLACK_STATE_SECRET,
   scopes: [
     "app_mentions:read",
     "channels:history",
@@ -61,23 +63,30 @@ const app = new App({
         throw new Error("Failed saving installation data to installationStore");
       }
     },
-    fetchInstallation(
+    async fetchInstallation(
       query: InstallationQuery<boolean>
     ): Promise<Installation> {
       if (query.isEnterpriseInstall && query.enterpriseId !== undefined) {
-        return prisma.installation.findFirst({
+        const installationDBResult = await prisma.installation.findFirst({
           where: {
             installationId: query.enterpriseId,
             installationType: "enterprise",
           },
-        }) as any;
+        });
+        const installation =
+          installationDBResult?.installationData as unknown as Installation;
+
+        return installation;
       } else if (query.teamId !== undefined) {
-        return prisma.installation.findFirst({
+        const installationDBResult = await prisma.installation.findFirst({
           where: {
             installationId: query.teamId,
             installationType: "team",
           },
-        }) as any;
+        });
+        const installation =
+          installationDBResult?.installationData as unknown as Installation;
+        return installation;
       } else {
         throw new Error(
           "Failed fetching installation data from installationStore"
@@ -109,7 +118,7 @@ const app = new App({
   installerOptions: {
     // If this is true, /slack/install redirects installers to the Slack authorize URL
     // without rendering the web page with "Add to Slack" button..
-    directInstall: true,
+    directInstall: false,
   },
 });
 

@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@athena-ai/sdk": "^0.0.1",
     "@prisma/client": "5.15.1",
     "@slack/bolt": "^3.18.0",
     "@slack/web-api": "^6.11.2",

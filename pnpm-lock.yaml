@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@athena-ai/sdk':
+    specifier: ^0.0.1
+    version: 0.0.1(zod@3.23.8)
   '@prisma/client':
     specifier: 5.15.1
     version: 5.15.1(prisma@5.15.1)
@@ -33,6 +36,14 @@ devDependencies:
     version: 5.15.1
 
 packages:
+
+  /@athena-ai/sdk@0.0.1(zod@3.23.8):
+    resolution: {integrity: sha512-lsFivZsQKEl0nxqWbyQqHD6d7SUTmoSzCJLL63cWj+q12/93/pu4ifDaRBFVR4/z+DqnZiRF7PJWpxOsC2W7Pw==}
+    peerDependencies:
+      zod: '>= 3'
+    dependencies:
+      zod: 3.23.8
+    dev: false
 
   /@prisma/client@5.15.1(prisma@5.15.1):
     resolution: {integrity: sha512-fmZRGmsUJ9+VwC/AvfP/PwdpD0xAEyPvNsD9/B3+GYpETq9VejVRT3PiqNvl76q1uYYzNZeo8u/LmzzTetHSEg==}
@@ -1783,4 +1794,8 @@ packages:
     dependencies:
       buffer-crc32: 0.2.13
       fd-slicer: 1.1.0
+    dev: false
+
+  /zod@3.23.8:
+    resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
     dev: false

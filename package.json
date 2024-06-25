@@ -1,0 +1,29 @@
+{
+  "name": "first-bolt-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/app.js",
+    "build:watch": "tsc -w -p .",
+    "dev": "tsc && tsc -w -p . & nodemon dist/app.js & node ngrok.cjs startNgrok"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "5.15.1",
+    "@slack/bolt": "^3.18.0",
+    "@slack/web-api": "^6.11.2",
+    "dotenv": "^16.4.5",
+    "ngrok": "5.0.0-beta.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.6",
+    "prisma": "^5.15.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

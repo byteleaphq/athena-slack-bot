@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model teams {
+  id               BigInt   @default(autoincrement())
+  created_at       DateTime @default(now()) @db.Timestamptz(6)
+  user_id          String
+  athena_api_token String
+  athena_brain_id  String?  @db.Uuid
+  team_id          String   @unique(map: "users_team_id_key")
+  chats            chats[]
+
+  @@id([id, team_id], map: "users_pkey")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model chats {
+  id              BigInt   @id @default(autoincrement())
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  team_id         String?
+  chat_id         String?  @db.Uuid
+  thread_id       String?
+  athena_brain_id String?  @db.Uuid
+  teams           teams?   @relation(fields: [team_id], references: [team_id], onDelete: NoAction)
+}

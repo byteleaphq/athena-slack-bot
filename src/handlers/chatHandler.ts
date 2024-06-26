@@ -3,12 +3,15 @@ import {
   KnownBlock,
   SlackEventMiddlewareArgs,
 } from "@slack/bolt";
-import { createChat, getResponse } from "../lib/api";
 import { prisma } from "../app";
 import { StringIndexed } from "@slack/bolt/dist/types/helpers";
 import { getSetConfigAppHome } from "../blocks/getSetConfigAppHome";
 
 import { getUserTeamInfo } from "../lib/getUserTeamInfo";
+
+import { AthenaCopilot } from "@athena-ai/sdk";
+import { base64DecodeForBasicAuth } from "../lib/base64ForBasicAuth";
+import { Integration } from "@athena-ai/sdk/models/operations";
 
 async function validateTeamAndAthenaInfo(
   teamId: string | undefined
@@ -47,6 +50,15 @@ export const appMentionHandler = async (
 
     const { athena_brain_id, athena_api_token } =
       await validateTeamAndAthenaInfo(teamId);
+
+    const { username, password } = base64DecodeForBasicAuth(athena_api_token);
+
+    const athenaCopilot = new AthenaCopilot({
+      security: {
+        username: username,
+        password: password,
+      },
+    });
 
     await client.reactions.add({
       name: "eyes",
@@ -92,16 +104,20 @@ export const appMentionHandler = async (
     }
 
     if (isRootMessage) {
-      const { response, chatId } = await createChat(
-        athena_api_token,
-        athena_brain_id,
-        message
-      );
-      if (!chatId) throw new Error("Chat creation failed");
+      const { chatInteractions } = await athenaCopilot.chat.postChatNewChat({
+        brainIds: [athena_brain_id],
+        name: "Slack Chat - " + new Date().toISOString(),
+        message: message,
+      });
+
+      if (!chatInteractions) throw new Error("Chat creation failed");
+
+      const { threadId: chatId, message: response } = chatInteractions[0];
 
       await prisma.chats.create({
         data: { chat_id: chatId, team_id: teamId, thread_id: threadId },
       });
+      if (!response) throw new Error("Chat creation failed");
 
       await sendMsgAndRemoveEmoji(response);
       return;
@@ -114,11 +130,14 @@ export const appMentionHandler = async (
     if (!chatInfo || !chatInfo.chat_id)
       throw new Error("Chat info validation failed");
 
-    const { response } = await getResponse(
-      athena_api_token,
-      chatInfo.chat_id,
-      message
-    );
+    const { chatInteractions } = await athenaCopilot.chat.postChatGetResponse({
+      chatThreadId: chatInfo.chat_id,
+      text: message,
+    });
+
+    if (!chatInteractions) throw new Error("Chat response failed");
+
+    const response = chatInteractions[0]?.message as string;
 
     await sendMsgAndRemoveEmoji(response);
   } catch (error: any) {

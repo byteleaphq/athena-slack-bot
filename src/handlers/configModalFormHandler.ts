@@ -6,7 +6,7 @@ import {
 import { prisma } from "../app";
 import { getConfiguredAppHome } from "../blocks/getConfiguredAppHome";
 import { StringIndexed } from "@slack/bolt/dist/types/helpers";
-import { base64EncodeForBasicAuth } from "../lib/base64EncodeForBasicAuth";
+import { base64EncodeForBasicAuth } from "../lib/base64ForBasicAuth";
 import { WebClient } from "@slack/web-api";
 
 async function createTeam(

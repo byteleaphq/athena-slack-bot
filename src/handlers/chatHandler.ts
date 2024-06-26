@@ -104,26 +104,20 @@ export const appMentionHandler = async (
     }
 
     if (isRootMessage) {
-      const { chat } = await athenaCopilot.chat.postChat({
-        brainId: athena_brain_id,
+      const { chatInteractions } = await athenaCopilot.chat.postChatNewChat({
+        brainIds: [athena_brain_id],
         name: "Slack Chat - " + new Date().toISOString(),
-        integration: Integration.Files,
+        message: message,
       });
 
-      const chatId = chat?.id as unknown as string;
+      if (!chatInteractions) throw new Error("Chat creation failed");
 
-      const { chatInteraction } = await athenaCopilot.chat.postChatGetResponse({
-        chatThreadId: chatId,
-        text: message,
-      });
-
-      const response = chatInteraction?.message as string;
-
-      if (!chatId) throw new Error("Chat creation failed");
+      const { threadId: chatId, message: response } = chatInteractions[0];
 
       await prisma.chats.create({
         data: { chat_id: chatId, team_id: teamId, thread_id: threadId },
       });
+      if (!response) throw new Error("Chat creation failed");
 
       await sendMsgAndRemoveEmoji(response);
       return;
@@ -136,12 +130,14 @@ export const appMentionHandler = async (
     if (!chatInfo || !chatInfo.chat_id)
       throw new Error("Chat info validation failed");
 
-    const { chatInteraction } = await athenaCopilot.chat.postChatGetResponse({
+    const { chatInteractions } = await athenaCopilot.chat.postChatGetResponse({
       chatThreadId: chatInfo.chat_id,
       text: message,
     });
 
-    const response = chatInteraction?.message as string;
+    if (!chatInteractions) throw new Error("Chat response failed");
+
+    const response = chatInteractions[0]?.message as string;
 
     await sendMsgAndRemoveEmoji(response);
   } catch (error: any) {

@@ -1,12 +1,12 @@
 {
-  "name": "first-bolt-app",
+  "name": "Athena Slackbot",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/app.js",
-    "build:watch": "tsc -w -p .",
+    "build": "pnpm i --frozen-lockfile && npx prisma generate && tsc",
     "dev": "tsc -w -p . & nodemon dist/app.js & node ngrok.cjs startNgrok"
   },
   "keywords": [],

@@ -8,6 +8,7 @@ import { getConfiguredAppHome } from "../blocks/getConfiguredAppHome";
 import { StringIndexed } from "@slack/bolt/dist/types/helpers";
 import { base64EncodeForBasicAuth } from "../lib/base64ForBasicAuth";
 import { WebClient } from "@slack/web-api";
+import { PrivateMetadata } from "./connectAccountButtonHandler";
 
 async function createTeam(
   userConfig: {
@@ -72,10 +73,7 @@ export const configModalFormHandler = async (
 
   const result = view.state.values;
 
-  const private_metadata = JSON.parse(view.private_metadata) as {
-    user_id: string;
-    channel_id: string; // empty if the action was triggered from app home
-  };
+  const private_metadata = JSON.parse(view.private_metadata) as PrivateMetadata;
   const team_id = body.team?.id || body.enterprise?.id;
 
   const userConfig = {

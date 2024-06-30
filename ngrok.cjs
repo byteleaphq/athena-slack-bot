@@ -8,7 +8,7 @@ async function startNgrok() {
   url = await ngrok.connect({
     addr: port,
     log_level: "info",
-    hostname: "renewed-mudfish-fairly.ngrok-free.app",
+    hostname: process.env.NGROK_HOSTNAME,
     authtoken: process.env.NGROK_AUTH_TOKEN,
     onStatusChange: (status) => {
       console.log("ngrok tunnel status changed", status);

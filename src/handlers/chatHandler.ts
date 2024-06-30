@@ -11,7 +11,6 @@ import { getUserTeamInfo } from "../lib/getUserTeamInfo";
 
 import { AthenaCopilot } from "@athena-ai/sdk";
 import { base64DecodeForBasicAuth } from "../lib/base64ForBasicAuth";
-import { Integration } from "@athena-ai/sdk/models/operations";
 
 async function validateTeamAndAthenaInfo(
   teamId: string | undefined
@@ -29,6 +28,13 @@ async function validateTeamAndAthenaInfo(
 
   throw new Error("Validation failed");
 }
+
+const convertHeadingsToBold = (markdown: string) => {
+  return markdown.replace(
+    /^(#{1,6}) (.*$)/gim,
+    (_: any, __: any, content: any) => `*${content}* `
+  );
+};
 
 export const appMentionHandler = async (
   payload: SlackEventMiddlewareArgs<"app_mention"> &
@@ -72,7 +78,7 @@ export const appMentionHandler = async (
           type: "section",
           text: {
             type: "mrkdwn",
-            text: response,
+            text: convertHeadingsToBold(response),
           },
         },
       ];

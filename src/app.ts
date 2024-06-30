@@ -8,11 +8,6 @@ import { connectAccountButtonHandler } from "./handlers/connectAccountButtonHand
 import { configModalFormHandler } from "./handlers/configModalFormHandler";
 export const prisma = new PrismaClient(); // Prisma client
 
-console.log(process.env.SLACK_SIGNING_SECRET);
-console.log(process.env.SLACK_BOT_TOKEN);
-
-console.log(process.env.NODE_ENV);
-
 const appConfig =
   process.env.NODE_ENV === "development"
     ? {

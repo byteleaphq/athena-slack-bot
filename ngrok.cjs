@@ -31,12 +31,6 @@ switch (args[0]) {
   case "startNgrok":
     startNgrok();
     break;
-  // case "stopNgrok":
-  //   stopNgrok();
-  //   break;
-  // case "restartNgrok":
-  //   restartNgrok();
-  //   break;
   default:
     console.log("Invalid command");
     break;

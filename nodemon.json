@@ -1,6 +1,0 @@
-{
-  "events": {
-    "exit": "node ngrok.cjs stopNgrok"
-  },
-  "ignore": ["ngrok.cjs"]
-}

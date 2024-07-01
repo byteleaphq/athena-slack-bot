@@ -29,13 +29,14 @@ async function validateTeamAndAthenaInfo(
   throw new Error("Validation failed");
 }
 
-const convertHeadingsToBold = (markdown: string) => {
-  return markdown.replace(
-    /^(#{1,6}) (.*$)/gim,
-    (_: any, __: any, content: any) => `*${content}* `
-  );
+const convertHeadingsAndBold = (markdown: string) => {
+  return markdown
+    .replace(
+      /^(#{1,6}) (.*$)/gim,
+      (_: any, __: any, content: any) => `*${content}* `
+    )
+    .replace(/\*\*(.*?)\*\*/g, "*$1*");
 };
-
 export const appMentionHandler = async (
   payload: SlackEventMiddlewareArgs<"app_mention"> &
     AllMiddlewareArgs<StringIndexed>
@@ -78,7 +79,7 @@ export const appMentionHandler = async (
           type: "section",
           text: {
             type: "mrkdwn",
-            text: convertHeadingsToBold(response),
+            text: convertHeadingsAndBold(response),
           },
         },
       ];
@@ -89,7 +90,7 @@ export const appMentionHandler = async (
           elements: [
             {
               type: "mrkdwn",
-              text: "Reply to this thread to continue the chat. :speech_balloon:",
+              text: "Tag `@Athena Copilot` and reply to this thread to continue the chat. :speech_balloon:",
             },
           ],
         });

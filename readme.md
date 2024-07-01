@@ -33,6 +33,7 @@ Once set up, you can interact with Athena Copilot in any channel where it's been
 2. The bot will create a thread with its response.
 3. Continue the conversation by replying in the thread and mentioning the bot again.
 4. To start a new conversation, simply send a new message in the channel mentioning the bot.
+   
 
 ## Development Setup
 
@@ -41,10 +42,15 @@ If you're looking to contribute or run your own instance, follow these steps:
 1. Clone the repository
 2. Install dependencies: `pnpm install`
 3. Set up your environment variables (see below)
-4. Build the project: `pnpm run build`
-5. Start the bot: `pnpm run start`
+4. Set up the database:
+   - Make sure your `DATABASE_URL` is set correctly in the `.env` file
+   - Run `npx prisma generate` to generate Prisma client
+   - Run `npx prisma db push` to create the database tables based on the Prisma schema
+5. Build the project: `pnpm run build`
+6. Start the bot: `pnpm run start`
 
 For development, you can use: `pnpm run dev`
+
 
 ### Environment Variables
 
@@ -62,6 +68,18 @@ PORT=
 NODE_ENV="development"
 DATABASE_URL=
 ```
+
+
+### Database Setup
+
+This project uses Prisma as an ORM. The Prisma schema is already included in the project. To set up your database:
+
+1. Ensure your `DATABASE_URL` is correctly set in the `.env` file.
+2. Run `npx prisma generate` to generate the Prisma client.
+3. Run `npx prisma db push` to create the database tables based on the Prisma schema.
+
+If you need to make changes to the database schema, update the `prisma/schema.prisma` file and run `npx prisma db push` again.
+
 
 ### Slack App Manifest
 

@@ -1,6 +1,6 @@
 # Athena Copilot Slack Bot
 
-Athena Copilot is an enterprise search tool powered by Gen AI. This Slack bot integrates Athena Copilot's capabilities directly into your Slack workspace, allowing you to interact with your knowledge base (Brain) seamlessly.
+This Slack bot integrates Athena Copilot's capabilities directly into your Slack workspace, allowing you to interact with your knowledge base (Brain) seamlessly.
 
 ## Features
 

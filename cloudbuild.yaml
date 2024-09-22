@@ -1,0 +1,8 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/athena-copilot/github.com/byteleaphq/athena-slackbot:$COMMIT_SHA', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/athena-copilot/github.com/byteleaphq/athena-slackbot:$COMMIT_SHA']
+
+options:
+  logging: CLOUD_LOGGING_ONLY

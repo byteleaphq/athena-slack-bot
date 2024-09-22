@@ -31,7 +31,7 @@ model chats {
   teams           teams?   @relation(fields: [team_id], references: [team_id], onDelete: NoAction)
 }
 
-model Installation {
+model installation {
   id               Int     @id @default(autoincrement())
   installationId   String  @unique
   installationType String

@@ -148,9 +148,3 @@ Replace {your-domain} with your actual domain or ngrok URL when setting up the a
 ## Contributing
 
 We welcome contributions! Please see our contributing guidelines for more information.
-
-# Todos
-
-- [ ] add auth middleware
-
-- [ ] make modal use brains list

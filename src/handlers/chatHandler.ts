@@ -9,7 +9,7 @@ import { getSetConfigAppHome } from "../blocks/getSetConfigAppHome";
 
 import { getUserTeamInfo } from "../lib/getUserTeamInfo";
 
-import { AthenaCopilot } from "@athena-ai/sdk";
+import { Acp } from "@athena-ai/sdk";
 import { base64DecodeForBasicAuth } from "../lib/base64ForBasicAuth";
 
 async function validateTeamAndAthenaInfo(
@@ -60,7 +60,8 @@ export const appMentionHandler = async (
 
     const { username, password } = base64DecodeForBasicAuth(athena_api_token);
 
-    const athenaCopilot = new AthenaCopilot({
+    const athenaCopilot = new Acp({
+      serverURL: process.env.ACP_SERVER_URL,
       security: {
         username: username,
         password: password,
@@ -111,15 +112,15 @@ export const appMentionHandler = async (
     }
 
     if (isRootMessage) {
-      const { chatInteractions } = await athenaCopilot.chat.postChatNewChat({
-        brainIds: [athena_brain_id],
+      const chat = await athenaCopilot.chat.createChatThreadWithMsg({
+        brainId: athena_brain_id,
         name: "Slack Chat - " + new Date().toISOString(),
         message: message,
       });
 
-      if (!chatInteractions) throw new Error("Chat creation failed");
+      if (!chat) throw new Error("Chat creation failed");
 
-      const { threadId: chatId, message: response } = chatInteractions[0];
+      const { threadId: chatId, message: response } = chat[0];
 
       await prisma.chats.create({
         data: { chat_id: chatId, team_id: teamId, thread_id: threadId },
@@ -137,7 +138,7 @@ export const appMentionHandler = async (
     if (!chatInfo || !chatInfo.chat_id)
       throw new Error("Chat info validation failed");
 
-    const { chatInteractions } = await athenaCopilot.chat.postChatGetResponse({
+    const chatInteractions = await athenaCopilot.chat.sendChatMessage({
       chatThreadId: chatInfo.chat_id,
       text: message,
     });

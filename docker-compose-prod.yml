@@ -1,0 +1,31 @@
+x-doppler: &doppler-env
+  environment:{{range $key, $value := .}}
+    - {{$key}}{{end}}
+
+name: athena-slackbot
+
+services:
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: athena
+      POSTGRES_PASSWORD: athena-copilot
+      POSTGRES_DB: athena
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_dev:/var/lib/postgresql/data
+
+  web:
+    image: gcr.io/athena-copilot/github.com/byteleaphq/athena-slackbot:${BACKEND_SHA}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    <<: *doppler-env
+    command: pnpm run start
+    expose:
+      - "3000"
+
+volumes:
+  postgres_dev:
